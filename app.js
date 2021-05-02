@@ -6,4 +6,13 @@ app.use(express.json());
 
 app.use(routes);
 
+// final error handler
+app.use((error, req, res, next) => {
+  res.status(error.statusCode || 500).send({
+    error: {
+      message: error.message
+    }
+  });
+});
+
 module.exports = app;
