@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user-model.js');
+const errorResp = require('../utils/error-response.js');
 
 class Auth {
   constructor() { }
@@ -9,17 +10,13 @@ class Auth {
           email = req.body.email,
           password = req.body.password;
     if (!name || !email || !password) {
-      const error = new Error('Required fields missing');
-      error.statusCode = 400;
-      return next(error);
+      return next(errorResp.badRequest('Required fields missing'));
     }
     try {
       const userInDb = await User.findOne({ email });
       if (userInDb) {
         // email already exists
-        const error = new Error('User already registered');
-        error.statusCode = 400;
-        return next(error);
+        return next(errorResp.badRequest('User already registered'));
       }
       // hash user password
       const hash = await bcrypt.hash(password, 10);
@@ -41,13 +38,34 @@ class Auth {
       next(error);
     }
   }
+
   async login(req, res, next) {
     const email = req.body.email,
           password = req.body.password;
     if (!email || !password) {
-      res.status().send({
-        message: 'Required fields missing'
+      return next(errorResp.badRequest('Required fields missing'));
+    }
+    try {
+      const credentialsError = errorResp.unauthorized('Incorrect credentials');
+      // find user in db
+      const user = await User.findOne({ email });
+      if (!user) {
+        return next(credentialsError);
+      }
+      // compare password
+      const result = await bcrypt.compare(password, user.password);
+      if (!result) {
+        // credentials miss-match
+        return next(credentialsError);
+      }
+      // return user details for login
+      const userObj = user.toObject();
+      delete userObj.password;
+      res.send({
+        ...userObj
       });
+    } catch(error) {
+      next(error);
     }
   }
 }
