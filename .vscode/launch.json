@@ -12,6 +12,21 @@
         "<node_internals>/**"
       ],
       "restart": true,
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script", "dev"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Debug Node-Direct",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "restart": true,
       "program": "${workspaceFolder}/server.js",
       "runtimeExecutable": "nodemon",
       "console": "integratedTerminal",
