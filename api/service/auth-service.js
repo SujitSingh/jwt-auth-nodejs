@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user-model.js');
 const errorResp = require('../utils/error-response.js');
+const tokenUtil = require('../utils/token-util.js');
 
 class AuthService {
 
@@ -45,6 +46,17 @@ class AuthService {
     const userObj = existingUser.toObject();
     delete userObj.password;
     return userObj;
+  }
+
+  async refreshToken(refreshToken) {
+    if (!refreshToken) {
+      throw errorResp.badRequest('Missing refresh token');
+    }
+    const tokenDetails = tokenUtil.verifyRefreshJwtToken(refreshToken);
+    if (!tokenDetails) {
+      throw errorResp.unauthorized('Token expired');
+    }
+    return tokenDetails;
   }
 }
 

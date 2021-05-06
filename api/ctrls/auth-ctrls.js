@@ -28,6 +28,7 @@ class Auth {
     };
     try {
       const userObj = await authService.login(user);
+      // generate auth tokens add add to response and head
       const jwtToken = tokenUtil.generateJwtToken(userObj);
       const jwtRefreshToken = tokenUtil.generateRefreshJwtToken(userObj);
       res = cookieUtil.setAuthTokenCookie(res, jwtToken);
@@ -35,6 +36,21 @@ class Auth {
         user: userObj,
         token: jwtToken,
         refreshToken: jwtRefreshToken
+      });
+    } catch(error) {
+      next(error);
+    }
+  }
+
+  async refreshToken(req, res, next) {
+    const refreshToken = req.body.refreshToken;
+    try {
+      const tokenDetail = await authService.refreshToken(refreshToken);
+      // generate auth token add add to response and head
+      const jwtToken = tokenUtil.generateJwtToken(tokenDetail);
+      res = cookieUtil.setAuthTokenCookie(res, jwtToken);
+      res.send({
+        token: jwtToken
       });
     } catch(error) {
       next(error);
