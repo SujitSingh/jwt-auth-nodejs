@@ -1,4 +1,6 @@
 const authService = require('../service/auth-service.js');
+const tokenUtil = require('../utils/token-util.js');
+const cookieUtil = require('../utils/cookie-util.js');
 
 class Auth {
 
@@ -26,7 +28,14 @@ class Auth {
     };
     try {
       const userObj = await authService.login(user);
-      res.send(userObj);
+      const jwtToken = tokenUtil.generateJwtToken(userObj);
+      const jwtRefreshToken = tokenUtil.generateRefreshJwtToken(userObj);
+      res = cookieUtil.setAuthTokenCookie(res, jwtToken);
+      res.send({
+        user: userObj,
+        token: jwtToken,
+        refreshToken: jwtRefreshToken
+      });
     } catch(error) {
       next(error);
     }
