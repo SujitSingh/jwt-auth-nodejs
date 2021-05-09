@@ -3,6 +3,13 @@ const config = require('./config.js');
 
 class JwtService {
 
+  generateTokens(user) {
+    return {
+      token: this.generateJwtToken(user),
+      refreshToken: this.generateRefreshJwtToken(user)
+    };
+  }
+
   generateJwtToken(user) {
     return jwt.sign(
       { _id: user._id, name: user.name, email: user.email },

@@ -28,14 +28,13 @@ class AuthCtrls {
     };
     try {
       const userObj = await authService.login(user);
-      // generate auth tokens add add to response and head
-      const jwtToken = tokenUtil.generateJwtToken(userObj);
-      const jwtRefreshToken = tokenUtil.generateRefreshJwtToken(userObj);
-      res = cookieUtil.setAuthTokenCookie(res, jwtToken);
+      // generate auth tokens, add to response and head
+      const tokens = tokenUtil.generateTokens(userObj);
+      res = cookieUtil.setAuthTokenCookie(res, tokens.token);
       res.send({
         user: userObj,
-        token: jwtToken,
-        refreshToken: jwtRefreshToken
+        token: tokens.token,
+        refreshToken: tokens.refreshToken
       });
     } catch(error) {
       next(error);
@@ -43,14 +42,15 @@ class AuthCtrls {
   }
 
   async refreshToken(req, res, next) {
-    const refreshToken = req.body.refreshToken;
+    const currentRefreshToken = req.body.refreshToken;
     try {
-      const tokenDetail = await authService.refreshToken(refreshToken);
-      // generate auth token add to response the head and body
-      const jwtToken = tokenUtil.generateJwtToken(tokenDetail);
-      res = cookieUtil.setAuthTokenCookie(res, jwtToken);
+      const tokenDetail = await authService.refreshToken(currentRefreshToken);
+      // generate auth tokens, add to response and head
+      const tokens = tokenUtil.generateTokens(tokenDetail);
+      res = cookieUtil.setAuthTokenCookie(res, tokens.token);
       res.send({
-        token: jwtToken
+        token: tokens.token,
+        refreshToken: tokens.refreshToken
       });
     } catch(error) {
       next(error);
