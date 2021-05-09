@@ -2,7 +2,7 @@ const authService = require('../service/auth-service.js');
 const tokenUtil = require('../utils/token-util.js');
 const cookieUtil = require('../utils/cookie-util.js');
 
-class Auth {
+class AuthCtrls {
 
   async signup(req, res, next) {
     const user = {
@@ -58,4 +58,4 @@ class Auth {
   }
 }
 
-module.exports = new Auth();
+module.exports = new AuthCtrls();

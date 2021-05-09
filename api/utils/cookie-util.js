@@ -19,6 +19,10 @@ class CookieService {
     return this.setAuthTokenCookie(res, jwtToken);
   }
 
+  getAuthToken(req) {
+    return req.cookies && req.cookies.Authorization;
+  }
+
 }
 
 module.exports = new CookieService();
