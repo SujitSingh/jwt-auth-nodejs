@@ -52,11 +52,19 @@ class AuthService {
     if (!refreshToken) {
       throw errorResp.badRequest('Missing refresh token');
     }
-    const tokenDetails = tokenUtil.verifyRefreshJwtToken(refreshToken);
-    if (!tokenDetails) {
-      throw errorResp.unauthorized('Token expired');
+    try {
+      const tokenDetails = tokenUtil.verifyRefreshJwtToken(refreshToken);
+      if (!tokenDetails) {
+        throw errorResp.unauthorized('Token expired');
+      }
+      return tokenDetails;
+    } catch(error) {
+      // construct proper error response
+      if (!error.statusCode) {
+        error = errorResp.unauthorized(error.message);
+      }
+      throw error;
     }
-    return tokenDetails;
   }
 }
 

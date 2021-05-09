@@ -46,7 +46,7 @@ class Auth {
     const refreshToken = req.body.refreshToken;
     try {
       const tokenDetail = await authService.refreshToken(refreshToken);
-      // generate auth token add add to response and head
+      // generate auth token add to response the head and body
       const jwtToken = tokenUtil.generateJwtToken(tokenDetail);
       res = cookieUtil.setAuthTokenCookie(res, jwtToken);
       res.send({
